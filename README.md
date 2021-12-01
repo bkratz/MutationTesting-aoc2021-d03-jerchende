@@ -1,4 +1,4 @@
-# Advent Of Code 2020 Solutions
+# Advent Of Code 2021 Solutions
 
 [![Tests](https://github.com/jerchende/advent-of-code-2021/workflows/Tests/badge.svg?branch=master)](https://github.com/jerchende/advent-of-code-2021/actions?query=workflow%3ATests)
 
