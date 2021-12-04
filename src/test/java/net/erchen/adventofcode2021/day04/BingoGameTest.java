@@ -21,10 +21,34 @@ class BingoGameTest {
     }
 
     @Test
-    void shouldParseInput() {
+    void shouldFirstWinning_Sample() {
         var bingoGame = BingoGame.fromInput(sampleInput());
 
-        assertThat(bingoGame.getNumbers()).containsExactly(7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1);
-        assertThat(bingoGame.getDecks()).hasSize(3);
+        var magicNumber = bingoGame.getFirstWinning();
+        assertThat(magicNumber).isEqualTo(4512);
+    }
+
+    @Test
+    void shouldFirstWinning_Solution() {
+        var bingoGame = BingoGame.fromInput(solutionInput());
+
+        var magicNumber = bingoGame.getFirstWinning();
+        assertThat(magicNumber).isEqualTo(60368);
+    }
+
+    @Test
+    void shouldLastWinning_Sample() {
+        var bingoGame = BingoGame.fromInput(sampleInput());
+
+        var magicNumber = bingoGame.getLastWinning();
+        assertThat(magicNumber).isEqualTo(1924);
+    }
+
+    @Test
+    void shouldLastWinning_Solution() {
+        var bingoGame = BingoGame.fromInput(solutionInput());
+
+        var magicNumber = bingoGame.getLastWinning();
+        assertThat(magicNumber).isEqualTo(17435);
     }
 }

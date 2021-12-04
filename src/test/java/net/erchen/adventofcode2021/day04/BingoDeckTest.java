@@ -17,11 +17,11 @@ class BingoDeckTest {
             """);
 
         assertThat(bingoDeck.getNumbers()).hasDimensions(5, 5);
-        assertThat(bingoDeck.getNumbers()[0]).containsExactly(22, 13, 17, 11, 0);
-        assertThat(bingoDeck.getNumbers()[1]).containsExactly(8, 2, 23, 4, 24);
-        assertThat(bingoDeck.getNumbers()[2]).containsExactly(21, 9, 14, 16, 7);
-        assertThat(bingoDeck.getNumbers()[3]).containsExactly(6, 10, 3, 18, 5);
-        assertThat(bingoDeck.getNumbers()[4]).containsExactly(1, 12, 20, 15, 19);
+        assertThat(bingoDeck.getNumbers()[0]).extracting(BingoDeck.BingoNumber::getNumber).containsExactly(22, 13, 17, 11, 0);
+        assertThat(bingoDeck.getNumbers()[1]).extracting(BingoDeck.BingoNumber::getNumber).containsExactly(8, 2, 23, 4, 24);
+        assertThat(bingoDeck.getNumbers()[2]).extracting(BingoDeck.BingoNumber::getNumber).containsExactly(21, 9, 14, 16, 7);
+        assertThat(bingoDeck.getNumbers()[3]).extracting(BingoDeck.BingoNumber::getNumber).containsExactly(6, 10, 3, 18, 5);
+        assertThat(bingoDeck.getNumbers()[4]).extracting(BingoDeck.BingoNumber::getNumber).containsExactly(1, 12, 20, 15, 19);
     }
 
 }
