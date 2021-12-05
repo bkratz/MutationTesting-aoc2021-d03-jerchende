@@ -3,28 +3,37 @@ package net.erchen.adventofcode2021.common;
 import lombok.AccessLevel;
 import lombok.Builder;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 @Builder(access = AccessLevel.PACKAGE)
 public class Matrix<T> {
 
     private final List<List<T>> fields;
 
-    public static <T> Matrix<T> fromInitValue(int dimension, Supplier<T> initValue) {
+    private static <T> Matrix<T> fromStreams(Stream<Stream<T>> fields) {
         return Matrix.<T>builder()
-            .fields(new LinkedList<>(
-                Stream.generate(() -> new LinkedList<>(Stream.generate(initValue).limit(dimension).toList()))
-                    .limit(dimension)
-                    .collect(Collectors.toList())))
+            .fields(new LinkedList<>(fields.map(s -> new LinkedList<>(s.collect(toList()))).collect(toList())))
             .build();
+    }
 
+    public static <T> Matrix<T> fromInitValue(int dimension, Supplier<T> initValue) {
+        return fromStreams(Stream.generate(() -> Stream.generate(initValue).limit(dimension)).limit(dimension));
+    }
+
+    public static <T> Matrix<T> fromInput(String input, String horizontalSplitter, String vertialSplitter,
+                                          Function<? super String, T> objectCreator) {
+        return fromStreams(Arrays.stream(input.split(horizontalSplitter))
+            .map(String::trim)
+            .map(line -> Arrays.stream(line.split(vertialSplitter)).map(objectCreator)));
     }
 
     public T field(int x, int y) {
