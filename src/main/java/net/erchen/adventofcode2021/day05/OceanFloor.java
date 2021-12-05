@@ -1,15 +1,15 @@
 package net.erchen.adventofcode2021.day05;
 
-import java.util.Arrays;
+import net.erchen.adventofcode2021.common.Matrix;
 
-import static java.util.stream.Collectors.joining;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OceanFloor {
 
-    private final int[][] hydrothermalVents;
+    private final Matrix<AtomicInteger> hydrothermalVents;
 
     public OceanFloor(int dimension) {
-        this.hydrothermalVents = new int[dimension][dimension];
+        this.hydrothermalVents = Matrix.fromInitValue(dimension, () -> new AtomicInteger(0));
     }
 
     public void applyLine(int x1, int y1, int x2, int y2, boolean ignoreDiagonal) {
@@ -20,7 +20,7 @@ public class OceanFloor {
         int x = x1;
         int y = y1;
         while (x != x2 || y != y2) {
-            hydrothermalVents[y][x]++;
+            hydrothermalVents.field(x, y).incrementAndGet();
             if (x < x2) {
                 x++;
             } else if (x > x2) {
@@ -32,19 +32,15 @@ public class OceanFloor {
                 y--;
             }
         }
-        hydrothermalVents[y2][x2]++;
+        hydrothermalVents.field(x2, y2).incrementAndGet();
     }
 
     public long countDangerousAreas() {
-        return Arrays.stream(hydrothermalVents).flatMapToInt(Arrays::stream).filter(i -> i > 1).count();
+        return hydrothermalVents.allFields().filter(i -> i.intValue() > 1).count();
     }
 
     public String toString() {
-        return Arrays.stream(hydrothermalVents)
-            .map(line -> Arrays.stream(line)
-                .mapToObj(String::valueOf)
-                .collect(joining(" ")))
-            .collect(joining("\n"));
+        return hydrothermalVents.toString();
     }
 
 }
