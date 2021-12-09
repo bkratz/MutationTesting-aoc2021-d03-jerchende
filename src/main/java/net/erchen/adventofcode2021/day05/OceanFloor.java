@@ -20,7 +20,7 @@ public class OceanFloor {
         int x = x1;
         int y = y1;
         while (x != x2 || y != y2) {
-            hydrothermalVents.field(x, y).incrementAndGet();
+            hydrothermalVents.fieldValue(x, y).incrementAndGet();
             if (x < x2) {
                 x++;
             } else if (x > x2) {
@@ -32,11 +32,11 @@ public class OceanFloor {
                 y--;
             }
         }
-        hydrothermalVents.field(x2, y2).incrementAndGet();
+        hydrothermalVents.fieldValue(x2, y2).incrementAndGet();
     }
 
     public long countDangerousAreas() {
-        return hydrothermalVents.allFields().filter(i -> i.intValue() > 1).count();
+        return hydrothermalVents.allFieldValues().filter(i -> i.intValue() > 1).count();
     }
 
     public String toString() {

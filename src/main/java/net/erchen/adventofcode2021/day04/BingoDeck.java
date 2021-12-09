@@ -37,8 +37,8 @@ public class BingoDeck {
     public void draw(int number, BiConsumer<BingoDeck, Integer> victoryCollector) {
         for (int x = 0; x < DECK_SIZE; x++) {
             for (int y = 0; y < DECK_SIZE; y++) {
-                if (numbers.field(x, y).getNumber() == number) {
-                    numbers.field(x, y).setHit(true);
+                if (numbers.fieldValue(x, y).getNumber() == number) {
+                    numbers.fieldValue(x, y).setHit(true);
                     hits[x]++;
                     hits[DECK_SIZE + y]++;
                     if (magicNumber == 0 && isWon()) {
@@ -57,7 +57,7 @@ public class BingoDeck {
     }
 
     private int calculateMagicNumber(int number) {
-        return numbers.allFields().filter(bingoNumber -> !bingoNumber.isHit()).mapToInt(BingoNumber::getNumber).sum() * number;
+        return numbers.allFieldValues().filter(bingoNumber -> !bingoNumber.isHit()).mapToInt(BingoNumber::getNumber).sum() * number;
     }
 
     @Data

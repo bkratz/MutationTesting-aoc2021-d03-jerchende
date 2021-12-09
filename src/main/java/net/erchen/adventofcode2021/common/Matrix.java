@@ -2,10 +2,13 @@ package net.erchen.adventofcode2021.common;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -36,12 +39,26 @@ public class Matrix<T> {
             .map(line -> Arrays.stream(line.split(vertialSplitter)).map(objectCreator)));
     }
 
-    public T field(int x, int y) {
+    public T fieldValue(int x, int y) {
         return fields.get(y).get(x);
     }
 
-    public Stream<T> allFields() {
+    public Field field(int x, int y) {
+        return new Field(x, y);
+    }
+
+    public Stream<T> allFieldValues() {
         return fields.stream().flatMap(List::stream);
+    }
+
+    public Stream<Field> allFields() {
+        List<Field> result = new LinkedList<>();
+        for (int y = 0; y < fields.size(); y++) {
+            for (int x = 0; x < fields.get(y).size(); x++) {
+                result.add(field(x, y));
+            }
+        }
+        return result.stream();
     }
 
     public Stream<T> row(int index) {
@@ -60,13 +77,49 @@ public class Matrix<T> {
         return IntStream.range(0, fields.size()).boxed().map(this::column);
     }
 
-    public Stream<Stream<T>> rowsAndColums() {
+    public Stream<Stream<T>> rowsAndColumns() {
         return Stream.concat(rows(), columns());
     }
 
     @Override
     public String toString() {
         return this.rows().map(line -> line.map(Object::toString).collect(joining(" "))).collect(joining("\n"));
+    }
+
+    @Getter
+    @EqualsAndHashCode(of = {"x", "y"})
+    public class Field {
+        private final int x;
+        private final int y;
+
+        private Field(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public T getValue() {
+            return fieldValue(x, y);
+        }
+
+        public Optional<Field> left() {
+            return x - 1 >= 0 ? Optional.of(field(x - 1, y)) : Optional.empty();
+        }
+
+        public Optional<Field> top() {
+            return y - 1 >= 0 ? Optional.of(field(x, y - 1)) : Optional.empty();
+        }
+
+        public Optional<Field> right() {
+            return x + 1 < fields.get(0).size() ? Optional.of(field(x + 1, y)) : Optional.empty();
+        }
+
+        public Optional<Field> bottom() {
+            return y + 1 < fields.size() ? Optional.of(field(x, y + 1)) : Optional.empty();
+        }
+
+        public Stream<Field> getAdjacents() {
+            return Stream.of(left(), top(), right(), bottom()).flatMap(Optional::stream);
+        }
     }
 
 }
