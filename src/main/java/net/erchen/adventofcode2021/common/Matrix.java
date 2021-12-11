@@ -117,8 +117,28 @@ public class Matrix<T> {
             return y + 1 < fields.size() ? Optional.of(field(x, y + 1)) : Optional.empty();
         }
 
+        public Optional<Field> topLeft() {
+            return x - 1 >= 0 && y - 1 >= 0 ? Optional.of(field(x - 1, y - 1)) : Optional.empty();
+        }
+
+        public Optional<Field> topRight() {
+            return x + 1 < fields.get(0).size() && y - 1 >= 0 ? Optional.of(field(x + 1, y - 1)) : Optional.empty();
+        }
+
+        public Optional<Field> bottomLeft() {
+            return x - 1 >= 0 && y + 1 < fields.size() ? Optional.of(field(x - 1, y + 1)) : Optional.empty();
+        }
+
+        public Optional<Field> bottomRight() {
+            return x + 1 < fields.get(0).size() && y + 1 < fields.size() ? Optional.of(field(x + 1, y + 1)) : Optional.empty();
+        }
+
         public Stream<Field> getAdjacents() {
-            return Stream.of(left(), top(), right(), bottom()).flatMap(Optional::stream);
+            return Stream.of(top(), right(), bottom(), left()).flatMap(Optional::stream);
+        }
+
+        public Stream<Field> getAdjacentsWithDiagonals() {
+            return Stream.of(top(), topRight(), right(), bottomRight(), bottom(), bottomLeft(), left(), topLeft()).flatMap(Optional::stream);
         }
     }
 

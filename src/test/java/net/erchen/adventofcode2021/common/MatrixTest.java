@@ -54,8 +54,33 @@ class MatrixTest {
         var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
 
         assertThat(matrix.field(0, 0).getAdjacents()).extracting(Matrix.Field::getValue).containsExactly(2, 4);
-        assertThat(matrix.field(1, 1).getAdjacents()).extracting(Matrix.Field::getValue).containsExactly(4, 2, 6, 8);
-        assertThat(matrix.field(1, 2).getAdjacents()).extracting(Matrix.Field::getValue).containsExactly(7, 5, 9);
+        assertThat(matrix.field(1, 1).getAdjacents()).extracting(Matrix.Field::getValue).containsExactly(2, 6, 8, 4);
+        assertThat(matrix.field(1, 2).getAdjacents()).extracting(Matrix.Field::getValue).containsExactly(5, 9, 7);
+    }
+
+    @Test
+    void shouldReturnFieldsWithAdjacentsWithDiagonals() {
+
+        var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
+
+        assertThat(matrix.field(0, 0).getAdjacentsWithDiagonals()).extracting(Matrix.Field::getValue).containsExactly(2, 5, 4);
+        assertThat(matrix.field(1, 1).getAdjacentsWithDiagonals()).extracting(Matrix.Field::getValue).containsExactly(2, 3, 6, 9, 8, 7, 4, 1);
+        assertThat(matrix.field(1, 2).getAdjacentsWithDiagonals()).extracting(Matrix.Field::getValue).containsExactly(5, 6, 9, 7, 4);
+    }
+
+
+    @Test
+    void shouldReturnDirectAdjacents() {
+        var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
+
+        assertThat(matrix.field(1, 1).top()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(2));
+        assertThat(matrix.field(1, 1).topRight()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(3));
+        assertThat(matrix.field(1, 1).right()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(6));
+        assertThat(matrix.field(1, 1).bottomRight()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(9));
+        assertThat(matrix.field(1, 1).bottom()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(8));
+        assertThat(matrix.field(1, 1).bottomLeft()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(7));
+        assertThat(matrix.field(1, 1).left()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(4));
+        assertThat(matrix.field(1, 1).topLeft()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(1));
     }
 
     @Test
