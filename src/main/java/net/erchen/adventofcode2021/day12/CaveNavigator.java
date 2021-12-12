@@ -10,7 +10,7 @@ public class CaveNavigator {
 
     private static final String DELIMITER = "-";
     private final List<Set<String>> connections;
-    private boolean part2;
+    private final boolean part2;
 
     public CaveNavigator(List<String> inputs, boolean part2) {
         this.connections = inputs.stream()
