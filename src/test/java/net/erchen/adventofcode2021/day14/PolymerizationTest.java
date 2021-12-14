@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
+import static net.erchen.adventofcode2021.day14.Polymerization.pair;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PolymerizationTest {
@@ -25,9 +27,14 @@ class PolymerizationTest {
 
         var polymerization = Polymerization.fromInput(sampleInput());
 
-        assertThat(polymerization.getTemplate()).isEqualTo("NNCB");
-        assertThat(polymerization.getInstructions()).containsEntry('C' << 16 | 'H', 'B');
-        assertThat(polymerization.getInstructions()).containsEntry('C' << 16 | 'N', 'C');
+        assertThat(polymerization.getPairs())
+            .containsEntry(pair('N', 'N'), 1L)
+            .containsEntry(pair('N', 'C'), 1L)
+            .containsEntry(pair('C', 'B'), 1L);
+
+        assertThat(polymerization.getInstructions()).containsEntry(pair('C', 'H'), List.of(pair('C', 'B'), pair('B', 'H')));
+        assertThat(polymerization.getInstructions()).containsEntry(pair('C', 'N'), List.of(pair('C', 'C'), pair('C', 'N')));
+
     }
 
     @Test
@@ -35,16 +42,35 @@ class PolymerizationTest {
         var polymerization = Polymerization.fromInput(sampleInput());
 
         polymerization.doInsertion();
-        assertThat(polymerization.getTemplate()).isEqualTo("NCNBCHB");
+        assertThat(polymerization.getPairs())
+            .containsEntry(pair('N', 'C'), 1L)
+            .containsEntry(pair('C', 'N'), 1L)
+            .containsEntry(pair('N', 'B'), 1L)
+            .containsEntry(pair('B', 'C'), 1L)
+            .containsEntry(pair('C', 'H'), 1L)
+            .containsEntry(pair('H', 'B'), 1L);
 
         polymerization.doInsertion();
-        assertThat(polymerization.getTemplate()).isEqualTo("NBCCNBBBCBHCB");
+        assertThat(polymerization.getPairs()) // "NBCCNBBBCBHCB"
+            .containsEntry(pair('N', 'B'), 2L)
+            .containsEntry(pair('B', 'C'), 2L)
+            .containsEntry(pair('C', 'C'), 1L)
+            .containsEntry(pair('C', 'N'), 1L)
+            .containsEntry(pair('B', 'B'), 2L)
+            .containsEntry(pair('C', 'B'), 2L)
+            .containsEntry(pair('B', 'H'), 1L)
+            .containsEntry(pair('H', 'C'), 1L);
+    }
 
-        polymerization.doInsertion();
-        assertThat(polymerization.getTemplate()).isEqualTo("NBBBCNCCNBBNBNBBCHBHHBCHB");
+    @Test
+    void shouldCountOccurrencesIgnoringFirst() {
+        var polymerization = Polymerization.fromInput(sampleInput());
 
-        polymerization.doInsertion();
-        assertThat(polymerization.getTemplate()).isEqualTo("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB");
+        var occurrences = polymerization.countOccurrencesIgnoringFirst();
+        assertThat(occurrences) // NNCB
+            .containsEntry((int) 'N', 1L)
+            .containsEntry((int) 'C', 1L)
+            .containsEntry((int) 'B', 1L);
     }
 
     @Test
@@ -52,13 +78,12 @@ class PolymerizationTest {
         var polymerization = Polymerization.fromInput(sampleInput());
 
         polymerization.doInsertion(10);
-        assertThat(polymerization.getTemplate()).hasSize(3073);
-        var occurrences = polymerization.countOccurrences();
+        var occurrences = polymerization.countOccurrencesIgnoringFirst();
         assertThat(occurrences)
             .containsEntry((int) 'B', 1749L)
             .containsEntry((int) 'C', 298L)
             .containsEntry((int) 'H', 161L)
-            .containsEntry((int) 'N', 865L);
+            .containsEntry((int) 'N', 864L);
     }
 
     @Test
@@ -90,6 +115,6 @@ class PolymerizationTest {
         var polymerization = Polymerization.fromInput(solutionInput());
 
         polymerization.doInsertion(40);
-        assertThat(polymerization.getMagicNumber()).isEqualTo(2509L);
+        assertThat(polymerization.getMagicNumber()).isEqualTo(2827627697643L);
     }
 }

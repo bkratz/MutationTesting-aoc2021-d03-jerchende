@@ -5,31 +5,43 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
+@Getter
 @Builder(access = AccessLevel.PRIVATE)
 public class Polymerization {
 
-    private int[] template;
+    private Map<Integer, Long> pairs;
 
-    @Getter
-    private final Map<Integer, Character> instructions;
+    private final Map<Integer, List<Integer>> instructions;
 
     public static Polymerization fromInput(String input) {
         var split = input.split("\n\n");
         return Polymerization.builder()
-            .template(split[0].chars().toArray())
+            .pairs(pairs(split[0]))
             .instructions(Arrays.stream(split[1].split("\n"))
                 .map(line -> line.split(" -> "))
                 .collect(toMap(line -> {
                     var chars = line[0].toCharArray();
-                    return instructionKey(chars[0], chars[1]);
-                }, line -> line[1].charAt(0))))
+                    return pair(chars[0], chars[1]);
+                }, line -> {
+                    var chars = line[0].toCharArray();
+                    return List.of(pair(chars[0], line[1].charAt(0)), pair(line[1].charAt(0), chars[1]));
+                })))
             .build();
+    }
+
+    private static Map<Integer, Long> pairs(String input) {
+        return IntStream.range(0, input.length() - 1)
+            .map(i -> pair(input.charAt(i), input.charAt(i + 1)))
+            .boxed()
+            .collect(groupingBy(identity(), counting()));
     }
 
     public void doInsertion(int times) {
@@ -37,31 +49,24 @@ public class Polymerization {
     }
 
     public void doInsertion() {
-        template =
-            IntStream.concat(
-                    IntStream.range(0, template.length - 1)
-                        .flatMap(i -> IntStream.of(template[i], instructions.get(instructionKey(template[i], template[i + 1])))),
-                    IntStream.of(template[template.length - 1]))
-                .toArray();
-
+        pairs = pairs.entrySet()
+            .stream()
+            .flatMap(e -> instructions.get(e.getKey()).stream().map(k -> Map.entry(k, e.getValue())))
+            .collect(groupingBy(Map.Entry::getKey, HashMap::new, summingLong(Map.Entry::getValue)));
     }
 
-    private static int instructionKey(int a, int b) {
+    static int pair(int a, int b) {
         return a << 16 | b;
     }
 
-    public Map<Integer, Long> countOccurrences() {
-        return Arrays.stream(template).boxed().collect(groupingBy(identity(), counting()));
+    public Map<Integer, Long> countOccurrencesIgnoringFirst() {
+        return pairs.entrySet().stream()
+            .map(e -> Map.entry(e.getKey() & 65535, e.getValue()))
+            .collect(groupingBy(Map.Entry::getKey, HashMap::new, summingLong(Map.Entry::getValue)));
     }
 
     public long getMagicNumber() {
-        var statistics = countOccurrences().values().stream().mapToLong(Long::longValue).summaryStatistics();
+        var statistics = countOccurrencesIgnoringFirst().values().stream().mapToLong(Long::longValue).summaryStatistics();
         return statistics.getMax() - statistics.getMin();
     }
-
-    public String getTemplate() {
-        return Arrays.stream(template).mapToObj(i -> Character.toString((char) i)).collect(joining());
-    }
-
-
 }
