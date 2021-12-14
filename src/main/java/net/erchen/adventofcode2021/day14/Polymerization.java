@@ -17,9 +17,9 @@ import static java.util.stream.Collectors.*;
 @Builder(access = AccessLevel.PRIVATE)
 public class Polymerization {
 
-    private Map<Integer, Long> pairs;
+    private Map<Pair, Long> pairs;
 
-    private final Map<Integer, List<Integer>> instructions;
+    private final Map<Pair, List<Pair>> instructions;
 
     public static Polymerization fromInput(String input) {
         var split = input.split("\n\n");
@@ -29,18 +29,17 @@ public class Polymerization {
                 .map(line -> line.split(" -> "))
                 .collect(toMap(line -> {
                     var chars = line[0].toCharArray();
-                    return pair(chars[0], chars[1]);
+                    return new Pair(chars[0], chars[1]);
                 }, line -> {
                     var chars = line[0].toCharArray();
-                    return List.of(pair(chars[0], line[1].charAt(0)), pair(line[1].charAt(0), chars[1]));
+                    return List.of(new Pair(chars[0], line[1].charAt(0)), new Pair(line[1].charAt(0), chars[1]));
                 })))
             .build();
     }
 
-    private static Map<Integer, Long> pairs(String input) {
+    private static Map<Pair, Long> pairs(String input) {
         return IntStream.range(0, input.length() - 1)
-            .map(i -> pair(input.charAt(i), input.charAt(i + 1)))
-            .boxed()
+            .mapToObj(i -> new Pair(input.charAt(i), input.charAt(i + 1)))
             .collect(groupingBy(identity(), counting()));
     }
 
@@ -55,13 +54,10 @@ public class Polymerization {
             .collect(groupingBy(Map.Entry::getKey, HashMap::new, summingLong(Map.Entry::getValue)));
     }
 
-    static int pair(int a, int b) {
-        return a << 16 | b;
-    }
 
-    public Map<Integer, Long> countOccurrencesIgnoringFirst() {
+    public Map<Character, Long> countOccurrencesIgnoringFirst() {
         return pairs.entrySet().stream()
-            .map(e -> Map.entry(e.getKey() & 65535, e.getValue()))
+            .map(e -> Map.entry(e.getKey().right(), e.getValue()))
             .collect(groupingBy(Map.Entry::getKey, HashMap::new, summingLong(Map.Entry::getValue)));
     }
 
@@ -69,4 +65,8 @@ public class Polymerization {
         var statistics = countOccurrencesIgnoringFirst().values().stream().mapToLong(Long::longValue).summaryStatistics();
         return statistics.getMax() - statistics.getMin();
     }
+
+    public static record Pair(char left, char right) {
+    }
+
 }
