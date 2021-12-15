@@ -3,11 +3,9 @@ package net.erchen.adventofcode2021.day15;
 import lombok.SneakyThrows;
 import net.erchen.adventofcode2021.common.Matrix;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 import static net.erchen.adventofcode2021.day15.Chiton.multipleMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,8 +105,6 @@ class ChitonTest {
     }
 
     @Test
-    //@Disabled
-    @Timeout(value = 15, unit = TimeUnit.MINUTES)
     void shouldCalculateRiskBig_Solution() {
         var chiton = Chiton.fromInput(multipleMap(solutionInput()));
 

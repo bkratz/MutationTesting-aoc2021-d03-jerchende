@@ -7,15 +7,14 @@ import lombok.RequiredArgsConstructor;
 import net.erchen.adventofcode2021.common.Matrix;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.stream.IntStream;
 
 import static java.util.Comparator.comparingInt;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
-@Builder(access = AccessLevel.PRIVATE)
-// using Dijkstras algorithm
 public class Chiton {
     private final Matrix<PathNode> cave;
 
@@ -40,26 +39,29 @@ public class Chiton {
 
     }
 
+    @Builder(access = AccessLevel.PRIVATE)
     public Chiton(Matrix<PathNode> cave) {
         this.cave = cave;
         cave.field(0, 0).getValue().setTotalCosts(0);
 
-        var todo = new LinkedList<Matrix<PathNode>.Field>();
+        var todo = new PriorityQueue<Matrix<PathNode>.Field>(1, comparingInt(x -> x.getValue().getTotalCosts()));
+        var done = new HashSet<Matrix<PathNode>.Field>();
         todo.add(cave.field(0, 0));
 
         while (todo.size() > 0) {
-            var current = requireNonNull(todo.pollFirst());
+            var current = todo.poll();
+            done.add(current);
             current.getAdjacents()
-                .filter(adjacent -> adjacent != current)
+                .filter(adjacent -> !done.contains(adjacent))
                 .forEach(adjacent -> {
                     var totalCosts = adjacent.getValue().getCosts() + current.getValue().getTotalCosts();
                     if (totalCosts < adjacent.getValue().getTotalCosts()) {
                         adjacent.getValue().setPredecessor(current);
                         adjacent.getValue().setTotalCosts(totalCosts);
+                        todo.remove(adjacent);
                         todo.add(adjacent);
                     }
                 });
-            todo.sort(comparingInt(x -> x.getValue().getTotalCosts()));
         }
     }
 
