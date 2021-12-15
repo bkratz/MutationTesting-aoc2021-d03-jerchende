@@ -1,9 +1,6 @@
 package net.erchen.adventofcode2021.common;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -81,12 +78,17 @@ public class Matrix<T> {
         return Stream.concat(rows(), columns());
     }
 
+    public int dimension() {
+        return fields.size();
+    }
+
     @Override
     public String toString() {
         return this.rows().map(line -> line.map(Object::toString).collect(joining(" "))).collect(joining("\n"));
     }
 
     @Getter
+    @ToString
     @EqualsAndHashCode(of = {"x", "y"})
     public class Field {
         private final int x;
