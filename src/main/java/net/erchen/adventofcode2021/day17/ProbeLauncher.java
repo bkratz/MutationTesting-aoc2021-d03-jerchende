@@ -69,6 +69,4 @@ public class ProbeLauncher {
     public enum Status {
         MATCHED, PAST_X, PAST_Y
     }
-
-
 }
