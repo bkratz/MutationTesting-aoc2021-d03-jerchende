@@ -34,7 +34,7 @@ public class BeaconScanner {
         var solved = new LinkedList<Scanner>();
         var base = scanners.get(0);
         addToMap(base, 0, 0, 0);
-        base.setPosition(Point.builder().x(0).y(0).z(0).build());
+
         solved.add(base);
 
         while (solved.size() < scanners.size()) {
@@ -44,7 +44,6 @@ public class BeaconScanner {
                 }
                 unlocatedScanner.allOrientations().map(this::overlapsWithMap).flatMap(Optional::stream).findFirst().ifPresent(offset -> {
                     addToMap(unlocatedScanner, offset.getX(), offset.getY(), offset.getZ());
-                    unlocatedScanner.setPosition(offset);
                     solved.add(unlocatedScanner);
                 });
             }
@@ -66,6 +65,7 @@ public class BeaconScanner {
     }
 
     private void addToMap(Scanner scanner, int offsetX, int offsetY, int offsetZ) {
+        scanner.setPosition(Point.builder().x(offsetX).y(offsetY).z(offsetZ).build());
         map.addAll(scanner.getPoints().stream().map(point -> Point.builder().x(point.getX() + offsetX).y(point.getY() + offsetY).z(point.getZ() + offsetZ).build()).toList());
     }
 
