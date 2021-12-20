@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 @Builder(access = AccessLevel.PACKAGE)
 public class Matrix<T> {
@@ -21,8 +20,8 @@ public class Matrix<T> {
 
     private static <T> Matrix<T> fromStreams(Stream<Stream<T>> fields) {
         return Matrix.<T>builder()
-            .fields(new LinkedList<>(fields.map(s -> new LinkedList<>(s.collect(toList()))).collect(toList())))
-            .build();
+                .fields(new LinkedList<>(fields.map(s -> new LinkedList<>(s.toList())).toList()))
+                .build();
     }
 
     public static <T> Matrix<T> fromInitValue(int dimension, Supplier<T> initValue) {
@@ -30,14 +29,18 @@ public class Matrix<T> {
     }
 
     public static <T> Matrix<T> fromInput(String input, String horizontalSplitter, String vertialSplitter,
-                                          Function<? super String, T> objectCreator) {
+            Function<? super String, T> objectCreator) {
         return fromStreams(Arrays.stream(input.split(horizontalSplitter))
-            .map(String::trim)
-            .map(line -> Arrays.stream(line.split(vertialSplitter)).map(objectCreator)));
+                .map(String::trim)
+                .map(line -> Arrays.stream(line.split(vertialSplitter)).map(objectCreator)));
     }
 
     public T fieldValue(int x, int y) {
         return fields.get(y).get(x);
+    }
+
+    public void setFieldValue(int x, int y, T value) {
+        fields.get(y).set(x, value);
     }
 
     public Field field(int x, int y) {
@@ -87,9 +90,23 @@ public class Matrix<T> {
         return this.rows().map(line -> line.map(Object::toString).collect(joining(" "))).collect(joining("\n"));
     }
 
+    public synchronized void addBorder(int width, Supplier<T> supplier) {
+        for (int i = 0; i < width; i++) {
+            var oldDimension = dimension();
+
+            fields.forEach(row -> {
+                row.add(0, supplier.get());
+                row.add(supplier.get());
+            });
+
+            fields.add(0, new LinkedList<>(Stream.generate(supplier).limit(oldDimension + 2).toList()));
+            fields.add(new LinkedList<>(Stream.generate(supplier).limit(oldDimension + 2).toList()));
+        }
+    }
+
     @Getter
     @ToString
-    @EqualsAndHashCode(of = {"x", "y"})
+    @EqualsAndHashCode(of = { "x", "y" })
     public class Field {
         private final int x;
         private final int y;

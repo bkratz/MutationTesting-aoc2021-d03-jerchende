@@ -15,27 +15,27 @@ class MatrixTest {
         var matrix = Matrix.fromInitValue(3, () -> "x");
 
         assertThat(matrix.toString()).isEqualTo("""
-            x x x
-            x x x
-            x x x""");
+                x x x
+                x x x
+                x x x""");
     }
 
     @Test
     void shouldParseInput() {
         var bingoDeck = Matrix.fromInput("""
-            22 13 17 11  0
-             8  2 23  4 24
-            21  9 14 16  7
-             6 10  3 18  5
-             1 12 20 15 19
-            """, "\n", " +", Integer::parseInt);
+                22 13 17 11  0
+                 8  2 23  4 24
+                21  9 14 16  7
+                 6 10  3 18  5
+                 1 12 20 15 19
+                """, "\n", " +", Integer::parseInt);
 
         assertThat(bingoDeck.toString()).isEqualTo("""
-            22 13 17 11 0
-            8 2 23 4 24
-            21 9 14 16 7
-            6 10 3 18 5
-            1 12 20 15 19""");
+                22 13 17 11 0
+                8 2 23 4 24
+                21 9 14 16 7
+                6 10 3 18 5
+                1 12 20 15 19""");
     }
 
     @Test
@@ -46,6 +46,46 @@ class MatrixTest {
         assertThat(matrix.fieldValue(0, 0)).isEqualTo(1);
         assertThat(matrix.fieldValue(1, 1)).isEqualTo(5);
         assertThat(matrix.fieldValue(1, 2)).isEqualTo(8);
+    }
+
+    @Test
+    void shouldSetFieldValue() {
+
+        var matrix = Matrix.fromInitValue(3, () -> 5);
+
+        assertThat(matrix.fieldValue(1, 1)).isEqualTo(5);
+        matrix.setFieldValue(1, 1, 99);
+        assertThat(matrix.fieldValue(1, 1)).isEqualTo(99);
+    }
+
+    @Test
+    void shouldAddBorder() {
+
+        var matrix = Matrix.fromInitValue(2, () -> "x");
+
+        matrix.addBorder(1, () -> "0");
+
+        assertThat(matrix.toString()).isEqualTo("""
+                0 0 0 0
+                0 x x 0
+                0 x x 0
+                0 0 0 0""");
+    }
+
+    @Test
+    void shouldAddThickBorder() {
+
+        var matrix = Matrix.fromInitValue(2, () -> "x");
+
+        matrix.addBorder(2, () -> "0");
+
+        assertThat(matrix.toString()).isEqualTo("""
+                0 0 0 0 0 0
+                0 0 0 0 0 0
+                0 0 x x 0 0
+                0 0 x x 0 0
+                0 0 0 0 0 0
+                0 0 0 0 0 0""");
     }
 
     @Test
@@ -67,7 +107,6 @@ class MatrixTest {
         assertThat(matrix.field(1, 1).getAdjacentsWithDiagonals()).extracting(Matrix.Field::getValue).containsExactly(2, 3, 6, 9, 8, 7, 4, 1);
         assertThat(matrix.field(1, 2).getAdjacentsWithDiagonals()).extracting(Matrix.Field::getValue).containsExactly(5, 6, 9, 7, 4);
     }
-
 
     @Test
     void shouldReturnDirectAdjacents() {
@@ -164,7 +203,7 @@ class MatrixTest {
         var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
 
         assertThat(matrix.rowsAndColumns()).extracting(s -> s.collect(toList()))
-            .containsExactly(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9), List.of(1, 4, 7), List.of(2, 5, 8), List.of(3, 6, 9));
+                .containsExactly(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9), List.of(1, 4, 7), List.of(2, 5, 8), List.of(3, 6, 9));
     }
 
     @Test
@@ -173,10 +212,9 @@ class MatrixTest {
         var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
 
         assertThat(matrix.toString()).isEqualTo("""
-            1 2 3
-            4 5 6
-            7 8 9""");
+                1 2 3
+                4 5 6
+                7 8 9""");
     }
-
 
 }
