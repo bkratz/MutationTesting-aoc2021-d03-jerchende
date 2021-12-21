@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public class DiracDice {
 
-    private Player player1;
-    private Player player2;
-    private Dice dice;
-    private int pointsToWin;
+    private final Player player1;
+    private final Player player2;
+    private final Dice dice;
+    private final int pointsToWin;
 
     public DiracDice(int startingPositionPlayer1, int startingPositionPlayer2) {
         player1 = Player.builder().position(startingPositionPlayer1).build();
