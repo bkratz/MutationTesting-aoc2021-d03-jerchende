@@ -35,7 +35,6 @@ public class Reactor {
         }
         cuboids = Stream.concat(
                         cuboids.stream()
-                                .filter(existing -> !cuboid.fullyContains(existing))
                                 .flatMap(existing -> existing.split(cuboid))
                                 .filter(existing -> !cuboid.fullyContains(existing))
                         ,
