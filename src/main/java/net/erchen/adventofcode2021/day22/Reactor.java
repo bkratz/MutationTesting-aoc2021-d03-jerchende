@@ -119,6 +119,7 @@ public class Reactor {
                     (other.z1 >= z1 && other.z2 <= z2);
         }
 
+        // TODO do not split in so many parts to increase performance
         public Stream<Cuboid> split(Cuboid splitter) {
             return splitX(splitter.x1)
                     .flatMap(part -> part.splitX(splitter.x2))
