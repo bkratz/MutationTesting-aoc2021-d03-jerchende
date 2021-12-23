@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static net.erchen.adventofcode2021.day23.AmphipodBurrow.State.emptyState;
 
 @Slf4j
 @Getter
@@ -78,7 +79,7 @@ public class AmphipodBurrow {
         var todo = new PriorityQueue<>(1, Comparator.comparingLong(State::score));
         var done = new HashMap<State, Long>();
 
-        todo.add(new State(positions, 0L, 0L, 0));
+        todo.add(emptyState(positions));
         int logI = 0;
 
         while (todo.size() > 0) {
@@ -89,9 +90,7 @@ public class AmphipodBurrow {
 
             for (State state : nextStates(current)) {
                 if (done.containsKey(state)) {
-                    if (done.get(state) > state.totalEnergy) {
-                        done.replace(state, state.totalEnergy);
-                    }
+
                     continue;
                 }
                 done.put(state, state.totalEnergy);
@@ -107,6 +106,7 @@ public class AmphipodBurrow {
 
     List<State> nextStates(State state) {
         return IntStream.range(0, positions.length)
+                .filter(position -> position != state.lastPositionMoved)
                 .filter(position -> !state.isFree(position))
                 .boxed()
                 .flatMap(position -> nextFields(burrow.get(position), state.positions[position], null, 0, state).map(newField -> state.move(position, newField, this::estimateEnergyConsumption)))
@@ -153,7 +153,7 @@ public class AmphipodBurrow {
                 }).sum();
     }
 
-    public static record State(Amphipod[] positions, long totalEnergy, long estimatedEnergy, int steps) {
+    public static record State(Amphipod[] positions, long totalEnergy, long estimatedEnergy, int steps, int lastPositionMoved) {
 
         @Override
         public boolean equals(Object o) {
@@ -168,6 +168,10 @@ public class AmphipodBurrow {
         @Override
         public int hashCode() {
             return Arrays.hashCode(positions);
+        }
+
+        public static State emptyState(Amphipod[] positions) {
+            return new State(positions, 0, 0, 0, -1);
         }
 
         public long score() {
@@ -186,7 +190,7 @@ public class AmphipodBurrow {
             var newPositions = Arrays.copyOf(positions, positions.length);
             newPositions[to.field.positionReference] = positions[from];
             newPositions[from] = null;
-            return new State(newPositions, totalEnergy + (long) to.costs * positions[from].energyConsumption, estimatedEnergyCostsCalculator.apply(newPositions), steps + 1);
+            return new State(newPositions, totalEnergy + (long) to.costs * positions[from].energyConsumption, estimatedEnergyCostsCalculator.apply(newPositions), steps + 1, to.field().positionReference);
         }
 
     }

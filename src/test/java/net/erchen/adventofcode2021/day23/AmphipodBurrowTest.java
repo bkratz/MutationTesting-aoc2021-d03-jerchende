@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static net.erchen.adventofcode2021.day23.AmphipodBurrow.Amphipod.*;
+import static net.erchen.adventofcode2021.day23.AmphipodBurrow.State.emptyState;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AmphipodBurrowTest {
@@ -52,7 +53,7 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldFindNoNextFieldForBlocked() {
-        assertThat(sample.nextFields(sample.getHomeA().get(1), Desert, null, 0, new State(sample.getPositions(), 0, 0, 0))).isEmpty();
+        assertThat(sample.nextFields(sample.getHomeA().get(1), Desert, null, 0, emptyState(sample.getPositions()))).isEmpty();
     }
 
     /*
@@ -64,7 +65,7 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldNextFindFieldsInOpenHallway() {
-        assertThat(sample.nextFields(sample.getHomeA().get(0), Desert, null, 0, new State(sample.getPositions(), 0, 0, 0)))
+        assertThat(sample.nextFields(sample.getHomeA().get(0), Desert, null, 0, emptyState(sample.getPositions())))
                 .extracting(AmphipodBurrow.FieldWithCosts::field)
                 .containsAll(sample.getHallway().stream().filter(field -> field.isStopAllowed(Amber)).toList());
     }
@@ -112,12 +113,12 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldFindNextStates() {
-        assertThat(sample.nextStates(new State(sample.getPositions(), 0, 0, 0))).hasSize(28);
+        assertThat(sample.nextStates(emptyState(sample.getPositions()))).hasSize(28);
     }
 
     @Test
     void shouldFindNextStatesBig() {
-        assertThat(samplePart2.nextStates(new State(samplePart2.getPositions(), 0, 0, 0))).hasSize(28);
+        assertThat(samplePart2.nextStates(emptyState(samplePart2.getPositions()))).hasSize(28);
     }
 
     @Test
@@ -151,7 +152,7 @@ class AmphipodBurrowTest {
     @Test
     @Disabled
     void shouldFindMinEnergyWay_SolutionPart2() {
-        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isGreaterThan(41210);
+        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isGreaterThan(41322).isEqualTo(0L);
     }
 
     static State mockState(Field... occupiedFields) {
@@ -159,6 +160,6 @@ class AmphipodBurrowTest {
         for (Field occupiedField : occupiedFields) {
             fields[occupiedField.getPositionReference()] = Amber;
         }
-        return new State(fields, 0L, 0L, 0);
+        return emptyState(fields);
     }
 }
