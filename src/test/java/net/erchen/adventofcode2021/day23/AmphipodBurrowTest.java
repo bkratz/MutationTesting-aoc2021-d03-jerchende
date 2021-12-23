@@ -52,7 +52,7 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldFindNoNextFieldForBlocked() {
-        assertThat(sample.nextFields(sample.getHomeA().get(1), Desert, null, 0, emptyState(sample.getPositions()))).isEmpty();
+        assertThat(sample.nextFields(sample.getHomeA().get(1), sample.getHomeA().get(1), Desert, null, 0, emptyState(sample.getPositions()))).isEmpty();
     }
 
     /*
@@ -64,7 +64,7 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldNextFindFieldsInBlockedHallway() {
-        assertThat(sample.nextFields(sample.getHomeA().get(0), Bronze, null, 0, mockState(sample.getHallway().get(3)))).containsExactlyInAnyOrder(
+        assertThat(sample.nextFields(sample.getHomeA().get(0), sample.getHomeA().get(0), Bronze, null, 0, mockState(sample.getHallway().get(3)))).containsExactlyInAnyOrder(
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(0), 3),
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(1), 2)
         );
@@ -79,7 +79,7 @@ class AmphipodBurrowTest {
      */
     @Test
     void shouldNextFindFieldsInBlockedHallwayWithoutOtherHomes() {
-        assertThat(sample.nextFields(sample.getHomeA().get(0), Bronze, null, 0, mockState(sample.getHallway().get(7)))).containsExactlyInAnyOrder(
+        assertThat(sample.nextFields(sample.getHomeA().get(0), sample.getHomeA().get(0), Bronze, null, 0, mockState(sample.getHallway().get(7)))).containsExactlyInAnyOrder(
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(0), 3),
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(1), 2),
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(3), 2),
@@ -134,7 +134,7 @@ class AmphipodBurrowTest {
 
     @Test
     void shouldFindMinEnergyWay_SolutionPart2() {
-        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isGreaterThan(41322).isNotEqualTo(45322).isNotEqualTo(43410).isNotEqualTo(41838);
+        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isEqualTo(47328);
     }
 
     static State mockState(Field... occupiedFields) {

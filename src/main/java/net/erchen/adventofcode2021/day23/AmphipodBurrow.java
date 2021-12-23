@@ -110,19 +110,19 @@ public class AmphipodBurrow {
                 .filter(position -> position != state.lastPositionMoved)
                 .filter(position -> !state.isFree(position))
                 .boxed()
-                .flatMap(position -> nextFields(burrow.get(position), state.positions[position], null, 0, state).map(newField -> state.move(position, newField, this::estimateEnergyConsumption)))
+                .flatMap(position -> nextFields(burrow.get(position), burrow.get(position), state.positions[position], null, 0, state).map(newField -> state.move(position, newField, this::estimateEnergyConsumption)))
                 .toList();
     }
 
-    Stream<FieldWithCosts> nextFields(Field field, Amphipod type, Field previous, int fieldCount, State state) {
+    Stream<FieldWithCosts> nextFields(Field field, Field origin, Amphipod type, Field previous, int fieldCount, State state) {
         if (field.homeFor == type && field.allBelow().allMatch(below -> positions[below.positionReference] == type)) {
             return Stream.of();
         }
         return field.adjacents.stream()
                 .filter(adjacent -> !adjacent.equals(previous))
                 .filter(state::isFree)
-                .flatMap(adjacent -> Stream.concat(Stream.of(new FieldWithCosts(adjacent, fieldCount + 1)), nextFields(adjacent, type, field, fieldCount + 1, state)))
-                .filter(nextField -> nextField.field().isStopAllowed(type, state.positions));
+                .flatMap(adjacent -> Stream.concat(Stream.of(new FieldWithCosts(adjacent, fieldCount + 1)), nextFields(adjacent, origin, type, field, fieldCount + 1, state)))
+                .filter(nextField -> nextField.field().isStopAllowed(type, origin, state));
     }
 
     private long estimateEnergyConsumption(Amphipod[] positions) {
@@ -253,8 +253,8 @@ public class AmphipodBurrow {
         private final String debuggingName;
         private final int positionReference;
 
-        public boolean isStopAllowed(Amphipod type, Amphipod[] positions) {
-            return adjacents.size() < 3 && (homeFor == null || (homeFor == type && allBelow().allMatch(below -> positions[below.positionReference] == type)));
+        public boolean isStopAllowed(Amphipod type, Field from, State state) {
+            return adjacents.size() < 3 && ((homeFor == null && from.homeFor != null) || (homeFor == type && allBelow().allMatch(below -> state.positions[below.positionReference] == type)));
         }
 
         public Stream<Field> allBelow() {
