@@ -58,20 +58,6 @@ class AmphipodBurrowTest {
 
     /*
      * #############
-     * #...........#
-     * ###X#C#B#D###
-     *   #A#D#C#A#
-     *   #########
-     */
-    @Test
-    void shouldNextFindFieldsInOpenHallway() {
-        assertThat(sample.nextFields(sample.getHomeA().get(0), Desert, null, 0, emptyState(sample.getPositions())))
-                .extracting(AmphipodBurrow.FieldWithCosts::field)
-                .containsAll(sample.getHallway().stream().filter(field -> field.isStopAllowed(Amber)).toList());
-    }
-
-    /*
-     * #############
      * #...#.......#
      * ###X#.#.#.###
      *   #.#.#.#.#
@@ -99,7 +85,6 @@ class AmphipodBurrowTest {
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(1), 2),
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(3), 2),
                 new AmphipodBurrow.FieldWithCosts(sample.getHallway().get(5), 4),
-                new AmphipodBurrow.FieldWithCosts(sample.getHomeB().get(0), 4),
                 new AmphipodBurrow.FieldWithCosts(sample.getHomeB().get(1), 5)
         );
     }

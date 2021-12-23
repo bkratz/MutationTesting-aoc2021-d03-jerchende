@@ -122,7 +122,7 @@ public class AmphipodBurrow {
                 .filter(adjacent -> !adjacent.equals(previous))
                 .filter(state::isFree)
                 .flatMap(adjacent -> Stream.concat(Stream.of(new FieldWithCosts(adjacent, fieldCount + 1)), nextFields(adjacent, type, field, fieldCount + 1, state)))
-                .filter(nextField -> nextField.field().isStopAllowed(type));
+                .filter(nextField -> nextField.field().isStopAllowed(type, state.positions));
     }
 
     private long estimateEnergyConsumption(Amphipod[] positions) {
@@ -211,8 +211,8 @@ public class AmphipodBurrow {
         private final String debuggingName;
         private final int positionReference;
 
-        public boolean isStopAllowed(Amphipod type) {
-            return adjacents.size() < 3 && (homeFor == null || homeFor == type);
+        public boolean isStopAllowed(Amphipod type, Amphipod[] positions) {
+            return adjacents.size() < 3 && (homeFor == null || (homeFor == type && allBelow().allMatch(below -> positions[below.positionReference] == type)));
         }
 
         public Stream<Field> allBelow() {
