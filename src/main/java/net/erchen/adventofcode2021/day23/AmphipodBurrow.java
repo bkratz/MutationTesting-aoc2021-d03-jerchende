@@ -90,12 +90,12 @@ public class AmphipodBurrow {
             }
 
             for (State state : nextStates(current)) {
-                if (done.containsKey(state)) {
-
+                if (done.containsKey(state) && done.get(state) <= state.totalEnergy) {
                     continue;
                 }
                 done.put(state, state.totalEnergy);
                 if (state.estimatedEnergy == 0) {
+                    log.info("Found min with score {}: {}", state.totalEnergy, state);
                     return state.totalEnergy;
                 } else {
                     todo.add(state);
@@ -133,13 +133,10 @@ public class AmphipodBurrow {
                     var field = burrow.get(position);
 
                     if (field.homeFor == amphipod) {
-                        var belowFields = field.allBelow().toList();
-                        if (belowFields.stream().allMatch(below -> positions[below.positionReference] == amphipod)) { // is final position
+                        if (field.allBelow().allMatch(below -> positions[below.positionReference] == amphipod)) { // is final position
                             return 0;
-                        } else if (belowFields.stream().allMatch(below -> positions[below.positionReference] == null)) { // needs to go down
-                            return belowFields.size() * amphipod.energyConsumption;
-                        } else { // needs to go up again
-                            return (roomSize - belowFields.size() + 1) * 2 * amphipod.energyConsumption;
+                        } else {
+                            return (roomSize - (int) field.allBelow().count() + roomSize) * 2 * amphipod.energyConsumption;
                         }
                     }
 
@@ -154,7 +151,7 @@ public class AmphipodBurrow {
                 }).sum();
     }
 
-    public static record State(Amphipod[] positions, long totalEnergy, long estimatedEnergy, int steps, int lastPositionMoved) {
+    public static record State(Amphipod[] positions, State last, long totalEnergy, long estimatedEnergy, int steps, int lastPositionMoved) {
 
         @Override
         public boolean equals(Object o) {
@@ -171,8 +168,53 @@ public class AmphipodBurrow {
             return Arrays.hashCode(positions);
         }
 
+        public String toString() {
+            if (positions.length < 26) {
+                return Arrays.toString(positions);
+            }
+            var chars = Arrays.stream(positions).map(amphipod -> amphipod == null ? " " : amphipod.name().substring(0, 1)).toArray(String[]::new);
+            return (last != null ? last.toString() : "") + """
+                                        
+                    #############
+                    #§00§01§02§03§04§05§06§07§08§09§10#  §totalEnergy
+                    ###§11#§15#§19#§23###
+                      #§12#§16#§20#§24#
+                      #§13#§17#§21#§25#
+                      #§14#§18#§22#§26#
+                      #########
+                    """
+                    .replace("§00", chars[0])
+                    .replace("§01", chars[1])
+                    .replace("§02", chars[2])
+                    .replace("§03", chars[3])
+                    .replace("§04", chars[4])
+                    .replace("§05", chars[5])
+                    .replace("§06", chars[6])
+                    .replace("§07", chars[7])
+                    .replace("§08", chars[8])
+                    .replace("§09", chars[9])
+                    .replace("§10", chars[10])
+                    .replace("§11", chars[11])
+                    .replace("§12", chars[12])
+                    .replace("§13", chars[13])
+                    .replace("§14", chars[14])
+                    .replace("§15", chars[15])
+                    .replace("§16", chars[16])
+                    .replace("§17", chars[17])
+                    .replace("§18", chars[18])
+                    .replace("§19", chars[19])
+                    .replace("§20", chars[20])
+                    .replace("§21", chars[21])
+                    .replace("§22", chars[22])
+                    .replace("§23", chars[23])
+                    .replace("§24", chars[24])
+                    .replace("§25", chars[25])
+                    .replace("§26", chars[26])
+                    .replace("§totalEnergy", String.format("%6d", totalEnergy));
+        }
+
         public static State emptyState(Amphipod[] positions) {
-            return new State(positions, 0, 0, 0, -1);
+            return new State(positions, null, 0, 0, 0, -1);
         }
 
         public long score() {
@@ -191,7 +233,7 @@ public class AmphipodBurrow {
             var newPositions = Arrays.copyOf(positions, positions.length);
             newPositions[to.field.positionReference] = positions[from];
             newPositions[from] = null;
-            return new State(newPositions, totalEnergy + (long) to.costs * positions[from].energyConsumption, estimatedEnergyCostsCalculator.apply(newPositions), steps + 1, to.field().positionReference);
+            return new State(newPositions, this, totalEnergy + (long) to.costs * positions[from].energyConsumption, estimatedEnergyCostsCalculator.apply(newPositions), steps + 1, to.field().positionReference);
         }
 
     }

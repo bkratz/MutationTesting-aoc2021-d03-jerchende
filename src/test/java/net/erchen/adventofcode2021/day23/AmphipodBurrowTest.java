@@ -2,7 +2,6 @@ package net.erchen.adventofcode2021.day23;
 
 import net.erchen.adventofcode2021.day23.AmphipodBurrow.Field;
 import net.erchen.adventofcode2021.day23.AmphipodBurrow.State;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static net.erchen.adventofcode2021.day23.AmphipodBurrow.Amphipod.*;
@@ -129,15 +128,13 @@ class AmphipodBurrowTest {
     }
 
     @Test
-    @Disabled
     void shouldFindMinEnergyWay_SamplePart2() {
         assertThat(samplePart2.findLeastTotalEnergyWay()).isEqualTo(44169);
     }
 
     @Test
-    @Disabled
     void shouldFindMinEnergyWay_SolutionPart2() {
-        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isGreaterThan(41322).isEqualTo(0L);
+        assertThat(soulutionPart2.findLeastTotalEnergyWay()).isGreaterThan(41322).isNotEqualTo(45322).isNotEqualTo(43410).isNotEqualTo(41838);
     }
 
     static State mockState(Field... occupiedFields) {
