@@ -70,6 +70,7 @@ public class AmphipodBurrow {
             }
             if (i < fields.size() - 1) {
                 fields.get(i).adjacents.add(fields.get(i + 1));
+                fields.get(i).roomBelow.addAll(IntStream.range(i + 1, count).mapToObj(fields::get).toList());
             }
         }
         return fields;
@@ -204,6 +205,8 @@ public class AmphipodBurrow {
     public static class Field {
         @Builder.Default
         private final List<Field> adjacents = new LinkedList<>();
+        @Builder.Default
+        private final List<Field> roomBelow = new LinkedList<>();
         private final Amphipod homeFor;
         private final String debuggingName;
         private final int positionReference;
@@ -212,25 +215,11 @@ public class AmphipodBurrow {
             return adjacents.size() < 3 && (homeFor == null || homeFor == type);
         }
 
-        public boolean isHome() {
-            return homeFor != null;
-        }
-
-        private boolean isBelow(Field reference) {
-            if (adjacents.size() == 3) {
-                return false;
-            }
-            if (adjacents.size() == 1) {
-                return true;
-            }
-            return adjacents.stream().filter(f -> f != reference).anyMatch(x -> x.isBelow(this));
-        }
-
         public Stream<Field> allBelow() {
-            if (homeFor == null || adjacents.size() == 1) {
+            if (homeFor == null) {
                 return Stream.empty();
             }
-            return adjacents.stream().filter(x -> x.isBelow(this)).flatMap(f -> Stream.concat(Stream.of(f), f.allBelow()));
+            return roomBelow.stream();
         }
 
         @Override
