@@ -19,7 +19,11 @@ public class ALU {
     private final List<Instruction> instructions;
 
     public static ALU parseFromInput(List<String> input) {
-        return new ALU(input.stream().map(Instruction::parseFromInput).toList());
+        return new ALU(input.stream()
+                .filter(line -> !line.startsWith("#"))
+                .filter(line -> !line.isBlank())
+                .map(Instruction::parseFromInput)
+                .toList());
     }
 
     public Memory runProgramm(int[] input) {
