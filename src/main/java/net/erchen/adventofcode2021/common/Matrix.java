@@ -43,6 +43,12 @@ public class Matrix<T> {
         fields.get(y).set(x, value);
     }
 
+    public void swapValues(Field a, Field b) {
+        var valueA = a.getValue();
+        setFieldValue(a.getX(), a.getY(), b.getValue());
+        setFieldValue(b.getX(), b.getY(), valueA);
+    }
+
     public Field field(int x, int y) {
         return new Field(x, y);
     }
@@ -132,8 +138,16 @@ public class Matrix<T> {
             return x + 1 < fields.get(0).size() ? Optional.of(field(x + 1, y)) : Optional.empty();
         }
 
+        public Field rightWithOverflow() {
+            return right().orElseGet(() -> field(0, y));
+        }
+
         public Optional<Field> bottom() {
             return y + 1 < fields.size() ? Optional.of(field(x, y + 1)) : Optional.empty();
+        }
+
+        public Field bottomWithOverflow() {
+            return bottom().orElseGet(() -> field(x, 0));
         }
 
         public Optional<Field> topLeft() {

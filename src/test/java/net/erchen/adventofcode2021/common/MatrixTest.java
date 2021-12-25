@@ -3,6 +3,7 @@ package net.erchen.adventofcode2021.common;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +57,18 @@ class MatrixTest {
         assertThat(matrix.fieldValue(1, 1)).isEqualTo(5);
         matrix.setFieldValue(1, 1, 99);
         assertThat(matrix.fieldValue(1, 1)).isEqualTo(99);
+    }
+
+    @Test
+    void shouldSwapFields() {
+        AtomicInteger init = new AtomicInteger(0);
+        var matrix = Matrix.fromInitValue(3, init::incrementAndGet);
+        matrix.swapValues(matrix.field(0, 0), matrix.field(2, 2));
+
+        assertThat(matrix.toString()).isEqualTo("""
+                9 2 3
+                4 5 6
+                7 8 1""");
     }
 
     @Test
@@ -120,6 +133,14 @@ class MatrixTest {
         assertThat(matrix.field(1, 1).bottomLeft()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(7));
         assertThat(matrix.field(1, 1).left()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(4));
         assertThat(matrix.field(1, 1).topLeft()).hasValueSatisfying(adjacent -> assertThat(adjacent.getValue()).isEqualTo(1));
+    }
+
+    @Test
+    void shouldReturnAdjacentsWithOverflow() {
+        var matrix = Matrix.builder().fields(List.of(List.of(1, 2, 3), List.of(4, 5, 6), List.of(7, 8, 9))).build();
+
+        assertThat(matrix.field(2, 1).rightWithOverflow()).satisfies(adjacent -> assertThat(adjacent.getValue()).isEqualTo(4));
+        assertThat(matrix.field(1, 2).bottomWithOverflow()).satisfies(adjacent -> assertThat(adjacent.getValue()).isEqualTo(2));
     }
 
     @Test
