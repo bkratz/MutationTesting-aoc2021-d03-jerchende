@@ -1,14 +1,11 @@
 package net.erchen.adventofcode2021.day24;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static net.erchen.adventofcode2021.day24.ALU.Operation.*;
 import static net.erchen.adventofcode2021.day24.ALU.Variable.*;
@@ -78,12 +75,11 @@ class ALUTest {
     }
 
     @Test
-    @Disabled
-    @Timeout(value = 1, unit = TimeUnit.DAYS)
-    void shouldGetHighestModelNumber() {
+    void shouldGetModelNumbers() {
         var alu = ALU.parseFromInput(solutionInput());
-        var modelNumber = alu.highestModelNumber();
+        var modelNumber = alu.allowedModelNumbers();
 
-        assertThat(modelNumber).isLessThan(99999999000000L).isGreaterThan(90000000000000L);
+        assertThat(modelNumber.getMax()).isEqualTo(92793949489995L);
+        assertThat(modelNumber.getMin()).isEqualTo(51131616112781L);
     }
 }

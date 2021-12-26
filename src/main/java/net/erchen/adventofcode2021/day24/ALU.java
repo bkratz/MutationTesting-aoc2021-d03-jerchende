@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.LongStream;
 
-import static net.erchen.adventofcode2021.day24.ALU.Variable.z;
+import static java.util.stream.Collectors.joining;
 
 @Slf4j
 @Getter
@@ -38,27 +40,51 @@ public class ALU {
         return variables;
     }
 
-    public long highestModelNumber() {
-        var statistics = LongStream.iterate(99999999000001L, l -> l > 90000000000000L, l -> l - 1)
+    public LongSummaryStatistics allowedModelNumbers() {
+        Integer[] incrementPerStep = new Integer[14];
+        Integer[] requiredPerStep = new Integer[14];
+
+        Instruction incrementStepIdenifier = Instruction.parseFromInput("div z 1");
+
+        for (int i = 0; i < 14; i++) {
+            if (instructions.get(i * 18 + 4).equals(incrementStepIdenifier)) {
+                incrementPerStep[i] = ((Value) instructions.get(i * 18 + 15).varB).value;
+            } else {
+                requiredPerStep[i] = -1 * ((Value) instructions.get(i * 18 + 5).varB).value;
+            }
+        }
+
+        return LongStream.range(1_111_111, 9_999_999 + 1)
                 .parallel()
                 .filter(l -> (!String.valueOf(l).contains("0")))
-                .flatMap(l -> {
-                    var memory = runProgramm(toInput(l));
-                    if (memory != null && memory.getValue(z) == 0) {
-                        return LongStream.of(l);
-                    } else {
-                        return LongStream.empty();
+                .mapToObj(ALU::toDigitArray)
+                .flatMapToLong(variableDigits -> {
+                    var result = new int[14];
+                    var variableDigitsIndex = 0;
+                    var z = 0;
+                    for (int i = 0; i < incrementPerStep.length; i++) {
+                        if (incrementPerStep[i] != null) {
+                            z = z * 26 + variableDigits[variableDigitsIndex] + incrementPerStep[i];
+                            result[i] = variableDigits[variableDigitsIndex++];
+                        } else if (requiredPerStep[i] != null) {
+                            result[i] = (z % 26) - requiredPerStep[i];
+                            z = Math.floorDiv(z, 26);
+                            if (result[i] <= 0 || result[i] > 9) {
+                                return LongStream.empty();
+                            }
+                        }
                     }
+                    return LongStream.of(fromDigitArray(result));
                 })
-                .peek(number -> log.info("Found a number: " + number))
+                .peek(number -> log.info("Found a valid model number: " + number))
                 .summaryStatistics();
-
-        log.info("min: " + statistics.getMin());
-        log.info("max: " + statistics.getMax());
-        return statistics.getMin();
     }
 
-    private static int[] toInput(long input) {
+    private static long fromDigitArray(int[] input) {
+        return Long.parseLong(Arrays.stream(input).mapToObj(String::valueOf).collect(joining()));
+    }
+
+    private static int[] toDigitArray(long input) {
         return String.valueOf(input).chars().map(Character::getNumericValue).toArray();
     }
 
