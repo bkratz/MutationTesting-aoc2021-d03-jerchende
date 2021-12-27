@@ -15,6 +15,6 @@ mkdir -p src/test/resources/day$DAY
 touch src/test/resources/day$DAY/sample.txt && \
 git add src/test/resources/day$DAY/sample.txt
 
-curl "https://adventofcode.com/2021/day/$DAY/input" -H "cookie: session=$AOC_SESSION"  --output src/test/resources/day$DAY/input.txt && \
+curl "https://adventofcode.com/2021/day/${DAY#0}/input" -H "cookie: session=$AOC_SESSION"  --output src/test/resources/day$DAY/input.txt && \
 git add src/test/resources/day$DAY/input.txt
 
