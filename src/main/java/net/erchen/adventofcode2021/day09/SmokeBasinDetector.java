@@ -1,6 +1,6 @@
 package net.erchen.adventofcode2021.day09;
 
-import net.erchen.adventofcode2021.common.Matrix;
+import net.erchen.codingpuzzlescommon.matrix.Matrix;
 
 import java.util.LinkedList;
 import java.util.List;

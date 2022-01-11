@@ -5,6 +5,8 @@
 
 Here are my solutions for the Advent of Code [Advent of Code](https://adventofcode.com/2021). Implemented with Java 17 and Junit 5.
 
+This december I developed a 2D-Matrix, which I used for multiple days, since I am planning to use this tool for other puzzles too, I moved the implementation to a own [repository](https://github.com/jerchende/coding-puzzles-common/blob/master/src/main/java/net/erchen/codingpuzzlescommon/matrix/Matrix.java).
+
 ## My other Advent Of Code repositories:
 
 * [Advent of Code 2020 (Java)](https://github.com/jerchende/advent-of-code-2020)

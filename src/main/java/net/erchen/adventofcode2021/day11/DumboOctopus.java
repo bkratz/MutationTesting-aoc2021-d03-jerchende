@@ -3,7 +3,7 @@ package net.erchen.adventofcode2021.day11;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import net.erchen.adventofcode2021.common.Matrix;
+import net.erchen.codingpuzzlescommon.matrix.Matrix;
 
 import java.util.HashSet;
 import java.util.Set;

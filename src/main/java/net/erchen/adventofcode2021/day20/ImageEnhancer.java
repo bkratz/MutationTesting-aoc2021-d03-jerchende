@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.erchen.adventofcode2021.common.Matrix;
+import net.erchen.codingpuzzlescommon.matrix.Matrix;
 
 import java.util.Arrays;
 import java.util.Optional;

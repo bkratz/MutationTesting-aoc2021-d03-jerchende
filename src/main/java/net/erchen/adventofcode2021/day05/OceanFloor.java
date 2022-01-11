@@ -1,6 +1,6 @@
 package net.erchen.adventofcode2021.day05;
 
-import net.erchen.adventofcode2021.common.Matrix;
+import net.erchen.codingpuzzlescommon.matrix.Matrix;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

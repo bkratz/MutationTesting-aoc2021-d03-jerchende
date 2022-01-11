@@ -1,7 +1,7 @@
 package net.erchen.adventofcode2021.day15;
 
 import lombok.SneakyThrows;
-import net.erchen.adventofcode2021.common.Matrix;
+import net.erchen.codingpuzzlescommon.matrix.Matrix;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
