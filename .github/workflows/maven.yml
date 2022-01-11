@@ -24,9 +24,11 @@ jobs:
           java-version: 17
           cache: 'maven'
           server-id: github
-          server-username: jerchende
-          server-password: GITHUB_TOKEN_REF
-
+          server-username: GITHUB_USER_REF
+          server-password: GITHUB_TOKEN_REF # env variable name for GitHub Personal Access Token
 
       - name: Build with Maven
         run: mvn -B test --file pom.xml
+        env:
+          GITHUB_USER_REF: jerchende
+          GITHUB_TOKEN_REF: ${{ secrets.PACKAGE_REPO_PASSWORD }}
